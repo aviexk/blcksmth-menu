@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BLCKSMTH — Menu</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@400;600;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #111111;
+      --surface: #181818;
+      --red: #c0001a;
+      --white: #f0f0f0;
+      --muted: #888;
+      --divider: #2a2a2a;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--white);
+      font-family: 'Barlow Condensed', sans-serif;
+      min-height: 100vh;
+      padding: 0 0 60px;
+    }
+
+    /* ── Header ── */
+    header {
+      padding: 48px 32px 32px;
+      border-bottom: 1px solid var(--divider);
+    }
+
+    .brand {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(52px, 14vw, 88px);
+      color: var(--red);
+      letter-spacing: 0.04em;
+      line-height: 1;
+    }
+
+    .tagline {
+      font-size: 13px;
+      letter-spacing: 0.2em;
+      color: var(--muted);
+      text-transform: uppercase;
+      margin-top: 6px;
+    }
+
+    /* ── Sections ── */
+    .menu-section {
+      padding: 36px 32px 0;
+    }
+
+    .section-label {
+      font-size: 11px;
+      letter-spacing: 0.3em;
+      color: var(--muted);
+      text-transform: uppercase;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .section-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--divider);
+    }
+
+    /* ── Menu items ── */
+    .item {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--divider);
+    }
+
+    .item:last-child {
+      border-bottom: none;
+    }
+
+    .item-name {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(22px, 5.5vw, 30px);
+      letter-spacing: 0.05em;
+      color: var(--white);
+    }
+
+    .item-price {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 15px;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      color: var(--muted);
+      white-space: nowrap;
+      margin-left: 12px;
+    }
+
+    .item-price::before {
+      content: '₹';
+      font-size: 11px;
+      margin-right: 1px;
+    }
+
+    /* ── Add-ons ── */
+    .addons {
+      margin: 36px 32px 0;
+      background: var(--surface);
+      border-radius: 8px;
+      padding: 20px 24px;
+    }
+
+    .addons-label {
+      font-size: 10px;
+      letter-spacing: 0.3em;
+      color: var(--muted);
+      text-transform: uppercase;
+      margin-bottom: 14px;
+    }
+
+    .addon-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      padding: 7px 0;
+      border-bottom: 1px solid var(--divider);
+    }
+
+    .addon-item:last-child { border-bottom: none; }
+
+    .addon-name {
+      font-size: 16px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--white);
+    }
+
+    .addon-price {
+      font-size: 13px;
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    .addon-price::before { content: '+₹'; font-size: 10px; margin-right: 1px; }
+
+    /* ── Footer ── */
+    footer {
+      margin-top: 48px;
+      text-align: center;
+      font-size: 11px;
+      letter-spacing: 0.15em;
+      color: #444;
+      text-transform: uppercase;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="brand">BLCKSMTH</div>
+    <div class="tagline">Coffee Menu</div>
+  </header>
+
+  <!-- Hot Espresso -->
+  <section class="menu-section">
+    <div class="section-label">Espresso</div>
+    <div class="item"><span class="item-name">Double Espresso</span><span class="item-price">250</span></div>
+    <div class="item"><span class="item-name">Americano</span><span class="item-price">250</span></div>
+    <div class="item"><span class="item-name">Cortado</span><span class="item-price">275</span></div>
+    <div class="item"><span class="item-name">Cappuccino</span><span class="item-price">300</span></div>
+    <div class="item"><span class="item-name">Flat White</span><span class="item-price">300</span></div>
+    <div class="item"><span class="item-name">Latte</span><span class="item-price">300</span></div>
+  </section>
+
+  <!-- Iced -->
+  <section class="menu-section">
+    <div class="section-label">Iced</div>
+    <div class="item"><span class="item-name">Iced Double Espresso</span><span class="item-price">250</span></div>
+    <div class="item"><span class="item-name">Iced Americano</span><span class="item-price">250</span></div>
+    <div class="item"><span class="item-name">Iced Latte</span><span class="item-price">300</span></div>
+  </section>
+
+  <!-- Cold -->
+  <section class="menu-section">
+    <div class="section-label">Cold</div>
+    <div class="item"><span class="item-name">Cold Brew</span><span class="item-price">320</span></div>
+    <div class="item"><span class="item-name">Cold Coffee</span><span class="item-price">330</span></div>
+  </section>
+
+  <!-- Add-ons -->
+  <div class="addons">
+    <div class="addons-label">Milk Add-ons</div>
+    <div class="addon-item"><span class="addon-name">Almond Milk</span><span class="addon-price">90</span></div>
+    <div class="addon-item"><span class="addon-name">Oat Milk</span><span class="addon-price">90</span></div>
+  </div>
+
+  <footer>All prices in ₹ &nbsp;·&nbsp; Taxes included</footer>
+
+</body>
+</html>
