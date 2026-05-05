@@ -280,12 +280,24 @@
       position: relative;
     }
 
-    .cup-liquid {
+    .cup-layer {
       position: absolute;
-      bottom: 0; left: 0; right: 0;
+      left: 0; right: 0;
       height: 0;
-      border-radius: 0 0 20px 20px;
     }
+
+    .cup-ice-cube {
+      position: absolute;
+      width: 24px;
+      height: 20px;
+      background: linear-gradient(135deg, rgba(215,240,255,0.92) 0%, rgba(148,202,232,0.78) 100%);
+      border-radius: 3px;
+      box-shadow: inset 1px 1px 5px rgba(255,255,255,0.65), inset -1px -1px 3px rgba(100,160,200,0.35);
+      z-index: 10;
+      opacity: 0;
+      transition: opacity 0.35s ease;
+    }
+    .cup-ice-cube.visible { opacity: 1; }
 
     .cup-handle {
       position: absolute;
@@ -402,9 +414,7 @@
         <div class="drop-rain" id="drop-rain"></div>
         <div class="cup-wrapper">
           <div class="cup-rim"></div>
-          <div class="cup-body">
-            <div class="cup-liquid" id="cup-liquid"></div>
-          </div>
+          <div class="cup-body" id="cup-body"></div>
           <div class="cup-handle"></div>
         </div>
       </div>
@@ -476,19 +486,85 @@
     document.querySelectorAll('.item').forEach(el => priceObserver.observe(el));
 
     // ── Drink click animation ──────────────────────────────────────
+    // layers: filled bottom-up; bg can be solid colour or CSS gradient
     const DRINK_CONFIG = {
-      'Double Espresso':      { drops:[['coffee',4]],                        liquidColor:'#1c0903' },
-      'Americano':            { drops:[['coffee',4]],                        liquidColor:'#1c0a04' },
-      'Cortado':              { drops:[['coffee',2],['milk',2]],             liquidColor:'#4a2210' },
-      'Cappuccino':           { drops:[['coffee',2],['milk',3]],             liquidColor:'#5a2e14' },
-      'Flat White':           { drops:[['coffee',2],['milk',2]],             liquidColor:'#4e2612' },
-      'Latte':                { drops:[['coffee',2],['milk',3]],             liquidColor:'#6a3820' },
-      'Iced Double Espresso': { drops:[['ice',3],['coffee',2]],              liquidColor:'#1c0903' },
-      'Iced Americano':       { drops:[['ice',3],['coffee',2]],              liquidColor:'#1c0a04' },
-      'Iced Latte':           { drops:[['ice',2],['coffee',2],['milk',2]],   liquidColor:'#5a2c14' },
-      'Cold Brew':            { drops:[['ice',3],['coffee',3]],              liquidColor:'#100602' },
-      'Cold Coffee':          { drops:[['ice',2],['coffee',2],['milk',2]],   liquidColor:'#4a2010' },
+      'Double Espresso': {
+        drops: [['coffee',4]], iced: false,
+        layers: [{ bg:'#150800', pct:65 }]
+      },
+      'Americano': {
+        drops: [['coffee',3]], iced: false,
+        layers: [
+          { bg:'#1a0c04', pct:18 },
+          { bg:'linear-gradient(to top,#a8c0d0,#b8d0e0)', pct:50 }
+        ]
+      },
+      'Cortado': {
+        drops: [['coffee',2],['milk',2]], iced: false,
+        layers: [
+          { bg:'#1c0903', pct:35 },
+          { bg:'linear-gradient(to top,#b08860,#c8a880)', pct:30 }
+        ]
+      },
+      'Cappuccino': {
+        drops: [['coffee',2],['milk',2]], iced: false,
+        layers: [
+          { bg:'#1c0903', pct:24 },
+          { bg:'linear-gradient(to top,#b08860,#c8a880)', pct:24 },
+          { bg:'radial-gradient(ellipse at 50% 60%,#f0ece4,#ddd4c0)', pct:20 }
+        ]
+      },
+      'Flat White': {
+        drops: [['coffee',2],['milk',2]], iced: false,
+        layers: [
+          { bg:'#1c0903', pct:30 },
+          { bg:'linear-gradient(to top,#a87850,#bf9468)', pct:38 }
+        ]
+      },
+      'Latte': {
+        drops: [['coffee',2],['milk',3]], iced: false,
+        layers: [
+          { bg:'#1c0903', pct:14 },
+          { bg:'linear-gradient(to top,#b89060,#c8a882)', pct:48 },
+          { bg:'radial-gradient(ellipse at 50% 70%,#f0ece4,#e0d4c0)', pct:8 }
+        ]
+      },
+      'Iced Double Espresso': {
+        drops: [['ice',3],['coffee',2]], iced: true,
+        layers: [{ bg:'#1c0903', pct:55 }]
+      },
+      'Iced Americano': {
+        drops: [['ice',3],['coffee',2]], iced: true,
+        layers: [
+          { bg:'#1a0c04', pct:18 },
+          { bg:'linear-gradient(to top,#a8c0d0,#b8d0e0)', pct:42 }
+        ]
+      },
+      'Iced Latte': {
+        drops: [['ice',2],['coffee',2],['milk',2]], iced: true,
+        layers: [
+          { bg:'#1c0903', pct:15 },
+          { bg:'linear-gradient(to top,#b89060,#c8a882)', pct:45 }
+        ]
+      },
+      'Cold Brew': {
+        drops: [['ice',3],['coffee',3]], iced: true,
+        layers: [{ bg:'#0d0500', pct:60 }]
+      },
+      'Cold Coffee': {
+        drops: [['ice',2],['coffee',2],['milk',2]], iced: true,
+        layers: [
+          { bg:'#1c0903', pct:20 },
+          { bg:'linear-gradient(to top,#b89060,#c8a882)', pct:38 }
+        ]
+      }
     };
+
+    const ICE_SLOTS = [
+      { l:'8%',  b:'18%', r:-15 },
+      { l:'47%', b:'6%',  r: 22 },
+      { l:'66%', b:'28%', r: -8 },
+    ];
 
     function createDrop(rain, type) {
       const drop = document.createElement('div');
@@ -503,20 +579,48 @@
 
       document.getElementById('drink-title').textContent = name;
 
-      const liquid = document.getElementById('cup-liquid');
-      const rain   = document.getElementById('drop-rain');
+      const cupBody = document.getElementById('cup-body');
+      const rain    = document.getElementById('drop-rain');
 
       rain.innerHTML = '';
-      liquid.style.cssText = 'background:' + config.liquidColor + ';height:0;transition:none;border-radius:0 0 20px 20px;';
+      cupBody.innerHTML = '';
 
+      // Ice cubes inside the cup for iced drinks
+      if (config.iced) {
+        ICE_SLOTS.forEach(pos => {
+          const cube = document.createElement('div');
+          cube.className = 'cup-ice-cube';
+          cube.style.cssText = 'left:' + pos.l + ';bottom:' + pos.b + ';transform:rotate(' + pos.r + 'deg);';
+          cupBody.appendChild(cube);
+          requestAnimationFrame(() => requestAnimationFrame(() => cube.classList.add('visible')));
+        });
+      }
+
+      // Falling drops
       const allDrops = config.drops.flatMap(([t, n]) => Array(n).fill(t));
       allDrops.forEach((type, i) => {
         setTimeout(() => createDrop(rain, type), i * 190);
       });
 
-      setTimeout(() => {
-        liquid.style.cssText = 'background:' + config.liquidColor + ';height:72%;transition:height 1.5s cubic-bezier(0.25,1,0.5,1);border-radius:0 0 20px 20px;';
-      }, 350);
+      // Sequential layer fill — each layer starts when the previous is ~82% done
+      let bottomPct       = 0;
+      let cumulativeDelay = 350;
+
+      config.layers.forEach(layer => {
+        const el = document.createElement('div');
+        el.className = 'cup-layer';
+        el.style.cssText = 'background:' + layer.bg + ';bottom:' + bottomPct + '%;height:0;';
+        cupBody.appendChild(el);
+
+        const duration = Math.round(680 + layer.pct * 10);
+        setTimeout(() => {
+          el.style.transition = 'height ' + duration + 'ms cubic-bezier(0.25,1,0.5,1)';
+          el.style.height = layer.pct + '%';
+        }, cumulativeDelay);
+
+        cumulativeDelay += Math.round(duration * 0.82);
+        bottomPct       += layer.pct;
+      });
 
       document.getElementById('drink-overlay').classList.add('open');
     }
